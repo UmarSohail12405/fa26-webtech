@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iPhone 17 Pro Max - iStore</title>
+
+  <style>
+    /* Midterm numbers: N = 65, BP = 665px, H = 95, K = 5 */
+    :root { --accent: hsl(95, 70%, 45%); }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f5f5f7; color: #1d1d1f; }
+
+    .navbar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+      background: black; padding: 15px 30px; position: sticky; top: 0; z-index: 10;
+    }
+    .navbar h1 { color: white; font-size: 22px; }
+    .navbar a { color: #d2d2d7; text-decoration: none; margin-left: 15px; }
+    .navbar a:hover { color: white; }
+
+    /* ===== TASK 2: CSS Grid with named areas ===== */
+    /* Below BP: one column -> image, details, description */
+    .product {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "image"
+        "details"
+        "description";
+      gap: 30px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .product-image       { grid-area: image; }
+    .product-details     { grid-area: details; }
+    .product-description { grid-area: description; }
+
+    /* From BP = 600 + 65 = 665px and wider: two columns, description full width underneath */
+    @media (min-width: 665px) {
+      .product {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "image details"
+          "description description";
+      }
+      .product-details {
+        align-self: start;        /* do not stretch, otherwise sticky has no room to move */
+        position: sticky;
+        top: 95px;                /* (N mod 40) + 70 = 25 + 70 = 95px */
+      }
+    }
+
+    .product-image { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+    .product-image img { width: 100%; aspect-ratio: 3 / 4; object-fit: contain; display: block; }
+    .product-image figcaption { text-align: center; color: #555; font-size: 14px; margin-top: 10px; }
+
+    .product-details { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+    .product-details h2 { font-size: 28px; margin-bottom: 10px; }
+    .price { font-size: 26px; font-weight: bold; color: var(--accent); margin-bottom: 20px; }
+    .qty { margin-bottom: 20px; }
+    .qty label { font-weight: bold; margin-right: 10px; }
+    .qty input { width: 80px; padding: 8px; font-size: 16px; border: 2px solid #ccc; border-radius: 8px; }
+    .qty input:focus { border-color: var(--accent); outline: none; }
+    .add-btn { padding: 12px 28px; background: var(--accent); color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer; }
+
+    .product-description { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,.15); line-height: 1.7; }
+    .product-description h3 { margin: 20px 0 8px; }
+    .product-description h3:first-child { margin-top: 0; }
+    .product-description p { margin-bottom: 12px; color: #333; }
+
+    footer { background: black; color: #d2d2d7; text-align: center; padding: 25px; margin-top: 30px; line-height: 1.8; }
+  </style>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <h1>iStore</h1>
+    <nav>
+      <a href="index.html#home">Home</a>
+      <a href="index.html#iphone17">iPhone 17</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main class="product">
+
+    <figure class="product-image">
+      <img src="images/iphone-17-pro-max.png" alt="iPhone 17 Pro Max">
+      <figcaption>iPhone 17 Pro Max in Cosmic Orange</figcaption>
+    </figure>
+
+    <section class="product-details" aria-label="Product details">
+      <h2>iPhone 17 Pro Max</h2>
+      <p class="price">Rs. 470,000</p>
+      <div class="qty">
+        <label for="qty">Quantity</label>
+        <input type="number" id="qty" name="qty" value="1" min="1" max="10">
+      </div>
+      <button type="button" class="add-btn">Add to Cart</button>
+    </section>
+
+    <section class="product-description">
+      <h3>About this phone</h3>
+      <p>The iPhone 17 Pro Max is the biggest and most capable iPhone in the lineup. It pairs a large, bright display with a long-lasting battery, so a full day of work, photos and video calls does not need a charger in the middle.</p>
+
+      <h3>Design and display</h3>
+      <p>The frame is built for strength while staying comfortable in the hand. The display is sharp and smooth, with high brightness for outdoor use and a refresh rate that adapts to what is on screen to save power.</p>
+      <p>Whether you read, scroll or watch films, the screen stays clear and colour-accurate. Gaming and video editing both feel fluid because the panel responds instantly to touch.</p>
+
+      <h3>Camera system</h3>
+      <p>The rear camera system covers wide, ultra-wide and long-zoom shots. In low light the sensors collect more detail, and video can be recorded in high resolution with steady stabilisation.</p>
+      <p>The front camera is also upgraded for video calls and selfies, with improved focus and skin-tone handling in mixed lighting.</p>
+
+      <h3>Performance and battery</h3>
+      <p>The latest chip handles demanding apps, games and on-device intelligence features without slowing down. Efficiency improvements mean the phone stays cooler during long sessions.</p>
+      <p>Fast charging and wireless charging are both supported, and the battery is tuned to keep its capacity for years of daily use.</p>
+
+      <h3>Storage and colours</h3>
+      <p>Available in 256GB, 512GB, 1TB and 2TB. Choose more storage if you record a lot of video or keep large photo libraries. Colours: Silver, Cosmic Orange and Deep Blue.</p>
+
+      <h3>What is in the box</h3>
+      <p>The phone, a USB-C charging cable and documentation. A power adapter is sold separately. Every iStore iPhone is original, sealed and covered by a store warranty.</p>
+
+      <h3>Delivery and warranty</h3>
+      <p>We deliver across Pakistan with tracked shipping. Orders in Lahore are usually delivered within two working days. If something is wrong with your device, contact us within seven days for a replacement under our warranty policy.</p>
+
+      <h3>Care tips</h3>
+      <p>Use a case and screen protector, avoid leaving the phone in a hot car, and install system updates when they appear. These simple habits keep the phone safe and fast for much longer.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>iStore | Phone: 03XX-XXXXXXX | Lahore, Pakistan</p>
+    <p>&copy; 2026 iStore. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
