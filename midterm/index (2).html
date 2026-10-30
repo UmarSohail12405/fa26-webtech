@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iStore - Apple iPhone Shop</title>
+
+  <style>
+    /* Midterm numbers: N = 65, BP = 665px, H = 95, K = 5 */
+    :root {
+      --accent: hsl(95, 70%, 45%);   /* accent colour, hue H = 95 */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body { font-family: Arial, sans-serif; background: #f5f5f7; color: #1d1d1f; }
+
+    [hidden] { display: none !important; }
+
+    /* Navigation bar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: black;
+      padding: 15px 30px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .navbar h1 { color: white; font-size: 22px; }
+    .navbar a { color: #d2d2d7; text-decoration: none; margin-left: 15px; }
+    .navbar a:hover { color: white; }
+
+    /* Hero banner */
+    .hero { background: #222; color: white; text-align: center; padding: 60px 20px; }
+    .hero h2 { font-size: 40px; margin-bottom: 10px; }
+
+    /* ===== TASK 1: CSS-only category filter ===== */
+    .filter-bar {
+      border: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 30px 20px 10px;
+    }
+    .filter-bar legend {
+      float: left;            /* keeps the legend on the same row as the buttons */
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .filter-bar label {
+      position: relative;
+      cursor: pointer;
+      padding: 8px 18px;
+      border: 2px solid var(--accent);
+      border-radius: 20px;
+      background: white;
+      color: var(--accent);
+      font-weight: bold;
+    }
+    /* the radio itself is hidden visually but stays keyboard-focusable */
+    .filter-bar input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+    }
+    /* selected filter looks selected: accent colour H */
+    .filter-bar label:has(input:checked) { background: var(--accent); color: white; }
+    .filter-bar label:has(input:focus-visible) { outline: 3px solid #1d1d1f; outline-offset: 2px; }
+
+    /* hide every card that is NOT in the chosen category (display:none = no gaps in the flex grid) */
+    .shop:has(#f-standard:checked) .card:not([data-category="standard"]),
+    .shop:has(#f-plus:checked)     .card:not([data-category="plus"]),
+    .shop:has(#f-pro:checked)      .card:not([data-category="pro"]),
+    .shop:has(#f-promax:checked)   .card:not([data-category="promax"]),
+    .shop:has(#f-special:checked)  .card:not([data-category="special"]) {
+      display: none;
+    }
+
+    /* ===== TASK 3 toolbar (search + sort) ===== */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+    }
+    .toolbar label { font-weight: bold; }
+    .toolbar input[type="search"] {
+      width: 90%;
+      max-width: 320px;
+      padding: 10px 16px;
+      border: 2px solid #ccc;
+      border-radius: 25px;
+      font-size: 16px;
+    }
+    .toolbar input[type="search"]:focus { border-color: var(--accent); outline: none; }
+    .toolbar button {
+      padding: 10px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #no-results { text-align: center; padding: 60px 20px; font-size: 20px; }
+
+    /* Grid that holds the cards */
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    /* One phone card */
+    .card {
+      position: relative;
+      background: white;
+      width: 260px;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .card:hover { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); }
+    .card img { width: 100%; height: 200px; object-fit: contain; }
+    .card h3 { margin: 10px 0; }
+    .card h3 a { color: inherit; text-decoration: none; }
+    .card p { font-size: 14px; color: #555; margin-bottom: 6px; }
+    .card .series { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
+    .price { font-size: 20px; font-weight: bold; color: var(--accent); }
+
+    /* "Premium" label added by script.js */
+    .premium-label {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #1d1d1f;
+      color: white;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    footer { background: black; color: #d2d2d7; text-align: center; padding: 25px; margin-top: 30px; line-height: 1.8; }
+
+    /* BP = 665px: tighter hero on small screens */
+    @media (max-width: 664px) {
+      .hero h2 { font-size: 28px; }
+      .navbar { padding: 12px 16px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <h1>iStore</h1>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#iphone15">iPhone 15</a>
+      <a href="#iphone16">iPhone 16</a>
+      <a href="#iphone17">iPhone 17</a>
+      <a href="#iphone18">iPhone 18</a>
+      <a href="#iphoneduo">iPhone Duo</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero" id="home">
+    <h2>Original Apple iPhones</h2>
+    <p>Shop the latest iPhone 15, 16, 17 and 18 series with all storage and color options.</p>
+  </section>
+
+  <main class="shop">
+
+    <!-- TASK 1: K + 1 = 6 radios (All + 5 categories), "All" checked on load -->
+    <form class="filter-form" aria-label="Filter by category">
+      <fieldset class="filter-bar">
+        <legend>Filter by category</legend>
+        <label><input type="radio" name="category" id="f-all" value="all" checked> All</label>
+        <label><input type="radio" name="category" id="f-standard" value="standard"> Standard</label>
+        <label><input type="radio" name="category" id="f-plus" value="plus"> Plus</label>
+        <label><input type="radio" name="category" id="f-pro" value="pro"> Pro</label>
+        <label><input type="radio" name="category" id="f-promax" value="promax"> Pro Max</label>
+        <label><input type="radio" name="category" id="f-special" value="special"> Air &amp; Duo</label>
+      </fieldset>
+    </form>
+
+    <!-- TASK 3: search + sort -->
+    <div class="toolbar">
+      <form role="search" onsubmit="return false">
+        <label for="search">Search</label>
+        <input type="search" id="search" name="search" placeholder="Search iPhone (e.g. Pro Max)" autocomplete="off">
+      </form>
+      <button type="button" id="sort-price">Sort by price</button>
+    </div>
+
+    <p id="no-results" hidden>No products found</p>
+
+    <div class="grid" id="product-grid">
+
+        <article class="card" id="iphone15" data-category="standard">
+          <img src="images/iphone-15.png" alt="iPhone 15">
+          <p class="series">iPhone 15</p>
+          <h3><a href="product.html">iPhone 15</a></h3>
+          <p>Storage: 128GB, 256GB, 512GB</p>
+          <p>Colors: Black, Blue, Green, Yellow, Pink</p>
+          <p class="price">Rs. 215,000</p>
+        </article>
+
+        <article class="card" data-category="plus">
+          <img src="images/iphone-15-plus.png" alt="iPhone 15 Plus">
+          <p class="series">iPhone 15</p>
+          <h3><a href="product.html">iPhone 15 Plus</a></h3>
+          <p>Storage: 128GB, 256GB, 512GB</p>
+          <p>Colors: Black, Blue, Green, Yellow, Pink</p>
+          <p class="price">Rs. 235,000</p>
+        </article>
+
+        <article class="card" data-category="pro">
+          <img src="images/iphone-15-pro.png" alt="iPhone 15 Pro">
+          <p class="series">iPhone 15</p>
+          <h3><a href="product.html">iPhone 15 Pro</a></h3>
+          <p>Storage: 128GB, 256GB, 512GB, 1TB</p>
+          <p>Colors: Black Titanium, White Titanium, Blue Titanium, Natural Titanium</p>
+          <p class="price">Rs. 285,000</p>
+        </article>
+
+        <article class="card" data-category="promax">
+          <img src="images/iphone-15-pro-max.png" alt="iPhone 15 Pro Max">
+          <p class="series">iPhone 15</p>
+          <h3><a href="product.html">iPhone 15 Pro Max</a></h3>
+          <p>Storage: 256GB, 512GB, 1TB</p>
+          <p>Colors: Black Titanium, White Titanium, Blue Titanium, Natural Titanium</p>
+          <p class="price">Rs. 335,000</p>
+        </article>
+
+        <article class="card" id="iphone16" data-category="standard">
+          <img src="images/iphone-16.png" alt="iPhone 16">
+          <p class="series">iPhone 16</p>
+          <h3><a href="product.html">iPhone 16</a></h3>
+          <p>Storage: 128GB, 256GB, 512GB</p>
+          <p>Colors: Black, White, Pink, Teal, Ultramarine</p>
+          <p class="price">Rs. 255,000</p>
+        </article>
+
+        <article class="card" data-category="plus">
+          <img src="images/iphone-16-plus.png" alt="iPhone 16 Plus">
+          <p class="series">iPhone 16</p>
+          <h3><a href="product.html">iPhone 16 Plus</a></h3>
+          <p>Storage: 128GB, 256GB, 512GB</p>
+          <p>Colors: Black, White, Pink, Teal, Ultramarine</p>
+          <p class="price">Rs. 280,000</p>
+        </article>
+
+        <article class="card" data-category="pro">
+          <img src="images/iphone-16-pro.png" alt="iPhone 16 Pro">
+          <p class="series">iPhone 16</p>
+          <h3><a href="product.html">iPhone 16 Pro</a></h3>
+          <p>Storage: 128GB, 256GB, 512GB, 1TB</p>
+          <p>Colors: Black Titanium, White Titanium, Natural Titanium, Desert Titanium</p>
+          <p class="price">Rs. 345,000</p>
+        </article>
+
+        <article class="card" data-category="promax">
+          <img src="images/iphone-16-pro-max.png" alt="iPhone 16 Pro Max">
+          <p class="series">iPhone 16</p>
+          <h3><a href="product.html">iPhone 16 Pro Max</a></h3>
+          <p>Storage: 256GB, 512GB, 1TB</p>
+          <p>Colors: Black Titanium, White Titanium, Natural Titanium, Desert Titanium</p>
+          <p class="price">Rs. 395,000</p>
+        </article>
+
+        <article class="card" id="iphone17" data-category="standard">
+          <img src="images/iphone-17.png" alt="iPhone 17">
+          <p class="series">iPhone 17</p>
+          <h3><a href="product.html">iPhone 17</a></h3>
+          <p>Storage: 256GB, 512GB</p>
+          <p>Colors: Black, White, Mist Blue, Sage, Lavender</p>
+          <p class="price">Rs. 300,000</p>
+        </article>
+
+        <article class="card" data-category="special">
+          <img src="images/iphone-17-air.png" alt="iPhone Air">
+          <p class="series">iPhone 17</p>
+          <h3><a href="product.html">iPhone Air</a></h3>
+          <p>Storage: 256GB, 512GB, 1TB</p>
+          <p>Colors: Space Black, Cloud White, Light Gold, Sky Blue</p>
+          <p class="price">Rs. 380,000</p>
+        </article>
+
+        <article class="card" data-category="pro">
+          <img src="images/iphone-17-pro.png" alt="iPhone 17 Pro">
+          <p class="series">iPhone 17</p>
+          <h3><a href="product.html">iPhone 17 Pro</a></h3>
+          <p>Storage: 256GB, 512GB, 1TB</p>
+          <p>Colors: Silver, Cosmic Orange, Deep Blue</p>
+          <p class="price">Rs. 420,000</p>
+        </article>
+
+        <article class="card" data-category="promax">
+          <img src="images/iphone-17-pro-max.png" alt="iPhone 17 Pro Max">
+          <p class="series">iPhone 17</p>
+          <h3><a href="product.html">iPhone 17 Pro Max</a></h3>
+          <p>Storage: 256GB, 512GB, 1TB, 2TB</p>
+          <p>Colors: Silver, Cosmic Orange, Deep Blue</p>
+          <p class="price">Rs. 470,000</p>
+        </article>
+
+        <article class="card" id="iphone18" data-category="pro">
+          <img src="images/iphone-18-pro.png" alt="iPhone 18 Pro">
+          <p class="series">iPhone 18</p>
+          <h3><a href="product.html">iPhone 18 Pro</a></h3>
+          <p>Storage: 256GB, 512GB, 1TB</p>
+          <p>Colors: Silver, Black, Blue</p>
+          <p class="price">Rs. 480,000</p>
+        </article>
+
+        <article class="card" data-category="promax">
+          <img src="images/iphone-18-pro-max.png" alt="iPhone 18 Pro Max">
+          <p class="series">iPhone 18</p>
+          <h3><a href="product.html">iPhone 18 Pro Max</a></h3>
+          <p>Storage: 256GB, 512GB, 1TB, 2TB</p>
+          <p>Colors: Silver, Black, Blue</p>
+          <p class="price">Rs. 530,000</p>
+        </article>
+
+        <article class="card" id="iphoneduo" data-category="special">
+          <img src="images/iphone-duo.png" alt="iPhone Duo">
+          <p class="series">iPhone Duo</p>
+          <h3><a href="product.html">iPhone Duo</a></h3>
+          <p>Display: Dual-screen design</p>
+          <p>Storage: 1TB, 2TB</p>
+          <p>Colors: White, Black</p>
+          <p>Apple's first dual-screen iPhone</p>
+          <p class="price">Rs. 600,000</p>
+        </article>
+
+    </div>
+  </main>
+
+  <footer id="contact">
+    <p>iStore | Phone: 03XX-XXXXXXX | Lahore, Pakistan</p>
+    <p>&copy; 2026 iStore. All rights reserved.</p>
+  </footer>
+
+  <!-- Existing features from the baseline (cart counter, back-to-top, footer year) -->
+  <script>
+    var cartCount = 0;
+    var cartText = document.createElement("span");
+    cartText.textContent = "Cart: 0";
+    cartText.style.color = "white";
+    cartText.style.marginLeft = "20px";
+    cartText.style.fontWeight = "bold";
+    document.querySelector("nav").appendChild(cartText);
+
+    var cards = document.querySelectorAll(".card");
+
+    function addToCart() {
+      cartCount = cartCount + 1;
+      cartText.textContent = "Cart: " + cartCount;
+      var btn = this;
+      btn.textContent = "Added ✓";
+      setTimeout(function () { btn.textContent = "Add to Cart"; }, 1000);
+    }
+
+    for (var i = 0; i < cards.length; i++) {
+      var button = document.createElement("button");
+      button.textContent = "Add to Cart";
+      button.style.marginTop = "10px";
+      button.style.padding = "10px 20px";
+      button.style.background = "var(--accent)";
+      button.style.color = "white";
+      button.style.border = "none";
+      button.style.borderRadius = "20px";
+      button.style.cursor = "pointer";
+      button.addEventListener("click", addToCart);
+      cards[i].appendChild(button);
+    }
+
+    var topBtn = document.createElement("button");
+    topBtn.textContent = "↑";
+    topBtn.style.display = "none";
+    topBtn.style.position = "fixed";
+    topBtn.style.bottom = "25px";
+    topBtn.style.right = "25px";
+    topBtn.style.width = "45px";
+    topBtn.style.height = "45px";
+    topBtn.style.border = "none";
+    topBtn.style.borderRadius = "50%";
+    topBtn.style.background = "var(--accent)";
+    topBtn.style.color = "white";
+    topBtn.style.fontSize = "20px";
+    topBtn.style.cursor = "pointer";
+    document.body.appendChild(topBtn);
+
+    window.addEventListener("scroll", function () {
+      topBtn.style.display = window.scrollY > 300 ? "block" : "none";
+    });
+    topBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.documentElement.style.scrollBehavior = "smooth";
+
+    var footerLines = document.querySelectorAll("footer p");
+    footerLines[1].textContent = "© " + new Date().getFullYear() + " iStore. All rights reserved.";
+  </script>
+
+  <!-- TASK 3 -->
+  <script src="script.js"></script>
+
+</body>
+</html>
