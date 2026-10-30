@@ -132,6 +132,7 @@
       <a href="#iphone16">iPhone 16</a>
       <a href="#iphone17">iPhone 17</a>
       <a href="#iphone18">iPhone 18</a>
+      <a href="#iphoneduo">iPhone Duo</a>
       <a href="#contact">Contact</a>
     </nav>
   </header>
@@ -286,11 +287,150 @@
     </div>
   </section>
 
+  <!-- ============ iPhone Duo ============ -->
+  <section id="iphoneduo">
+    <h2>iPhone Duo Series</h2>
+    <div class="grid">
+
+      <div class="card">
+        <img src="images/iphone-duo.png" alt="iPhone Duo">
+        <h3>iPhone Duo</h3>
+        <p>Display: Dual-screen design</p>
+        <p>Storage: 1TB, 2TB</p>
+        <p>Colors: White, Black</p>
+        <p>Apple's first dual-screen iPhone</p>
+        <p class="price">Rs. 600,000</p>
+      </div>
+
+    </div>
+  </section>
+
   <!-- FOOTER -->
   <footer id="contact">
     <p>iStore | Phone: 03XX-XXXXXXX | Lahore, Pakistan</p>
     <p>&copy; 2026 iStore. All rights reserved.</p>
   </footer>
+
+  <!-- ============ JAVASCRIPT (just before </body>) ============ -->
+  <script>
+    // ===== 1) Cart counter in the navbar =====
+    var cartCount = 0;
+    var cartText = document.createElement("span");
+    cartText.textContent = "Cart: 0";
+    cartText.style.color = "white";
+    cartText.style.marginLeft = "20px";
+    cartText.style.fontWeight = "bold";
+    document.querySelector("nav").appendChild(cartText);
+
+    // ===== 2) "Add to Cart" button on every card =====
+    var cards = document.querySelectorAll(".card");
+
+    function addToCart() {
+      cartCount = cartCount + 1;
+      cartText.textContent = "Cart: " + cartCount;
+
+      var btn = this;
+      btn.textContent = "Added ✓";
+      setTimeout(function () {
+        btn.textContent = "Add to Cart";
+      }, 1000);
+    }
+
+    for (var i = 0; i < cards.length; i++) {
+      var button = document.createElement("button");
+      button.textContent = "Add to Cart";
+      button.style.marginTop = "10px";
+      button.style.padding = "10px 20px";
+      button.style.background = "#0071e3";
+      button.style.color = "white";
+      button.style.border = "none";
+      button.style.borderRadius = "20px";
+      button.style.cursor = "pointer";
+      button.addEventListener("click", addToCart);
+      cards[i].appendChild(button);
+    }
+
+    // ===== 3) Search box =====
+    var searchInput = document.createElement("input");
+    searchInput.type = "text";
+    searchInput.placeholder = "Search iPhone (e.g. Pro Max)";
+    searchInput.style.display = "block";
+    searchInput.style.margin = "20px auto 0";
+    searchInput.style.width = "90%";
+    searchInput.style.maxWidth = "350px";
+    searchInput.style.padding = "12px 16px";
+    searchInput.style.border = "none";
+    searchInput.style.borderRadius = "25px";
+    searchInput.style.fontSize = "16px";
+    document.querySelector(".hero").appendChild(searchInput);
+
+    var noResults = document.createElement("p");
+    noResults.textContent = "No iPhones found. Try another search.";
+    noResults.style.display = "none";
+    noResults.style.textAlign = "center";
+    noResults.style.marginTop = "40px";
+    document.body.insertBefore(noResults, document.getElementById("iphone15"));
+
+    var sections = document.querySelectorAll("section[id^='iphone']");
+
+    searchInput.addEventListener("input", function () {
+      var text = searchInput.value.toLowerCase();
+      var totalFound = 0;
+
+      for (var s = 0; s < sections.length; s++) {
+        var sectionCards = sections[s].querySelectorAll(".card");
+        var foundInSection = 0;
+
+        for (var c = 0; c < sectionCards.length; c++) {
+          var name = sectionCards[c].querySelector("h3").textContent.toLowerCase();
+          if (name.includes(text)) {
+            sectionCards[c].style.display = "block";
+            foundInSection++;
+          } else {
+            sectionCards[c].style.display = "none";
+          }
+        }
+
+        sections[s].style.display = foundInSection > 0 ? "block" : "none";
+        totalFound = totalFound + foundInSection;
+      }
+
+      noResults.style.display = totalFound === 0 ? "block" : "none";
+    });
+
+    // ===== 4) Back-to-top button =====
+    var topBtn = document.createElement("button");
+    topBtn.textContent = "↑";
+    topBtn.style.display = "none";
+    topBtn.style.position = "fixed";
+    topBtn.style.bottom = "25px";
+    topBtn.style.right = "25px";
+    topBtn.style.width = "45px";
+    topBtn.style.height = "45px";
+    topBtn.style.border = "none";
+    topBtn.style.borderRadius = "50%";
+    topBtn.style.background = "#0071e3";
+    topBtn.style.color = "white";
+    topBtn.style.fontSize = "20px";
+    topBtn.style.cursor = "pointer";
+    document.body.appendChild(topBtn);
+
+    window.addEventListener("scroll", function () {
+      topBtn.style.display = window.scrollY > 300 ? "block" : "none";
+    });
+
+    topBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    // ===== 5) Smooth scrolling for navbar links =====
+    document.documentElement.style.scrollBehavior = "smooth";
+
+    // ===== 6) Automatic year in the footer =====
+    var footerLines = document.querySelectorAll("footer p");
+    footerLines[1].textContent =
+      "© " + new Date().getFullYear() + " iStore. All rights reserved.";
+  </script>
 
 </body>
 </html>
